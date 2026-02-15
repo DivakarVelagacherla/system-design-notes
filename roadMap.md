@@ -12,9 +12,9 @@
 
 **Current Phase:** Phase 1 - Fundamentals
 
-**Current Week:** 1 of 24
+**Current Week:** 2 of 24
 
-**Sessions Completed:** 0/48
+**Sessions Completed:** 3/48
 
 **Projects Built:** 0/4
 
@@ -28,12 +28,12 @@
 
 **Week 1 (Feb 8-9):**
 
-- ⏳ Session 1: Java concurrency (threads, executors, locks, atomics)
-- ⏳ Session 2: Networking basics (HTTP/HTTPS, REST vs gRPC, TCP vs UDP)
+- ✅ Session 1: Java concurrency (threads, executors, locks, atomics)
+- ✅ Session 2: Networking basics (HTTP/HTTPS, REST vs gRPC, TCP vs UDP)
 
 **Week 2 (Feb 15-16):**
 
-- ⏳ Session 1: Data storage part 1 (ACID vs BASE, indexing, transactions)
+- ✅ Session 1: Data storage part 1 (ACID vs BASE, indexing, transactions)
 - ⏳ Session 2: Data storage part 2 (Postgres + Redis hands-on)
 
 **Week 3 (Feb 22-23):**
