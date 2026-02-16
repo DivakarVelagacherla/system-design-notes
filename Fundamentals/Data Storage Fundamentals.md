@@ -1476,3 +1476,251 @@ Redis:
 - Use all three in real architectures
 
 ---
+
+## 📚 What's Next
+
+**Week 2 (Feb 15-16):**
+
+- More data storage patterns
+- Tooling and observability
+- Monitoring and debugging
+
+**Week 3 (Feb 22-23):**
+
+- Review fundamentals
+- Prepare for LLD phase
+
+---
+
+## ⚡ Redis Caching Performance - Hands-On Experiment
+
+### The Problem
+
+You're building an API that fetches user profiles. Each database query takes time. At 1000 requests/second, your database is struggling. **What happens when you add Redis as a cache layer?**
+
+---
+
+### The Experiment
+
+Built a Java application to measure actual performance difference between:
+
+1. Querying PostgreSQL directly (no cache)
+2. Using Redis as a cache layer
+
+**Setup:**
+
+- PostgreSQL with 1000 test users
+- Redis running in Docker
+- Artificial delay (`pg_sleep(0.1)`) to simulate realistic query time
+- Java application using Jedis (Redis client) and JDBC (PostgreSQL)
+
+---
+
+### Results Observed
+
+**Without Cache (10 direct DB calls):**
+
+```
+Time: 1276ms
+~127ms per query
+```
+
+**With Cache - First Call (cache miss):**
+
+```
+Time: 136ms
+Goes to DB + stores in Redis
+```
+
+**With Cache - Next 9 Calls (cache hits):**
+
+```
+Time: 5ms total
+~0.56ms per call
+```
+
+**Speedup: 227x faster when data is cached!**
+
+---
+
+### Why Redis is Faster
+
+**PostgreSQL (slow):**
+
+- Data stored on **disk** (SSD/HDD)
+- Must parse SQL, plan query, find row
+- Even simple queries have overhead
+- Typical query: 50-100ms
+
+**Redis (fast):**
+
+- Data stored in **RAM** (memory)
+- Simple key-value lookup (HashMap)
+- Hash table lookup is O(1)
+- RAM access is ~100,000x faster than disk
+- Typical lookup: 0.5-1ms
+
+**The Trade-off:**
+
+- Redis: Fast but **limited by RAM** (expensive, volatile)
+- Postgres: Slower but **durable** (data survives crashes)
+
+---
+
+### Cache-Aside Pattern (What We Built)
+
+```java
+public User getUserWithCache(Jedis redis, int userId) {
+    String cacheKey = "user:" + userId;
+    
+    // 1. Try cache first
+    String cached = redis.get(cacheKey);
+    if (cached != null) {
+        return gson.fromJson(cached, User.class);  // Cache hit!
+    }
+    
+    // 2. Cache miss - fetch from DB
+    User user = getUserFromDB(userId);
+    
+    // 3. Store in cache with TTL (60 seconds)
+    if (user != null) {
+        redis.setex(cacheKey, 60, gson.toJson(user));
+    }
+    
+    return user;
+}
+```
+
+**Flow:**
+
+1. Check Redis first
+2. If found → return immediately (fast!)
+3. If not found → query DB, then cache it
+4. Set expiration (TTL) to avoid stale data
+
+---
+
+### When to Use Redis Caching
+
+**✅ Use Redis for:**
+
+- **Read-heavy data** - Product catalogs, user profiles
+- **Expensive queries** - Queries with joins, aggregations
+- **Frequently accessed data** - Homepage content, trending posts
+- **Temporary data** - Sessions, rate limiting
+
+**❌ Don't use Redis for:**
+
+- **Frequently changing data** - Real-time stock prices (cache becomes stale)
+- **Security-sensitive data** - Passwords, API keys (Redis is not encrypted)
+- **Data requiring 100% accuracy** - Bank balances (can't risk serving stale data)
+- **Large datasets rarely accessed** - Wastes precious RAM
+
+---
+
+### Cache Invalidation Strategies
+
+When you update data in the database, the cached copy becomes **stale**. Three ways to handle this:
+
+**Strategy 1: Write-Through Cache**
+
+```java
+public void updateUser(int userId, String newName) {
+    // 1. Update database
+    postgres.execute("UPDATE users SET name = ? WHERE id = ?", newName, userId);
+    
+    // 2. Update cache immediately
+    User updated = getUserFromDB(userId);
+    redis.setex("user:" + userId, 3600, gson.toJson(updated));
+}
+```
+
+- **Pros:** Cache always fresh
+- **Cons:** Extra write operation, what if cache update fails?
+
+**Strategy 2: Cache Invalidation (Delete from cache)**
+
+```java
+public void updateUser(int userId, String newName) {
+    // 1. Update database
+    postgres.execute("UPDATE users SET name = ? WHERE id = ?", newName, userId);
+    
+    // 2. Delete from cache
+    redis.del("user:" + userId);
+    // Next read will be cache miss → fetch from DB → cache it
+}
+```
+
+- **Pros:** Simpler, no stale data
+- **Cons:** Next request is slower (cache miss)
+
+**Strategy 3: TTL (Time To Live)**
+
+```java
+redis.setex("user:" + userId, 60, userData);  // Expires after 60 seconds
+```
+
+- **Pros:** Simple, automatic cleanup, eventual consistency
+- **Cons:** Might serve stale data until expiration
+
+**Real-world:** Most companies use **Strategy 2 (Invalidation) + TTL** as backup
+
+---
+
+### Interview Connection
+
+**Interviewer:** "Your API is slow. Users complain about loading times. How do you fix it?"
+
+**Answer Framework:**
+
+1. **Measure first** - "I'd profile to find the bottleneck. If it's database queries..."
+2. **Identify pattern** - "Are we doing expensive queries repeatedly? Reading same data often?"
+3. **Propose caching** - "Add Redis cache layer between API and database"
+4. **Explain trade-offs:**
+    - ✅ 100-200x speedup for cached data
+    - ❌ Need to handle cache invalidation
+    - ❌ Limited by RAM (need to monitor memory usage)
+    - ❌ Adds complexity (one more system to maintain)
+5. **When NOT to cache** - "For real-time data or security-sensitive info, I'd optimize the database query instead with indexes or read replicas"
+
+**Follow-up:** "What if cached data becomes stale?"
+
+- "I'd use cache invalidation - when data updates, delete the cache key. Next read gets fresh data."
+- "Plus add TTL as a safety net - data expires after X seconds anyway."
+
+---
+
+### Key Takeaways
+
+1. **Redis gives 100-200x speedup** for frequently accessed data
+2. **Redis stores data in RAM** (fast but limited and volatile)
+3. **Cache-Aside pattern:** Check cache → if miss, query DB and cache it
+4. **Cache invalidation is critical** - delete or update cache when data changes
+5. **Use TTL as safety net** - data auto-expires to prevent serving stale data forever
+6. **Not everything should be cached** - consider data update frequency and criticality
+
+---
+
+## ⚡ Redis Caching - Hands-On Performance Testing
+
+### The Problem
+
+You're building an API that fetches user profiles. Each database query takes time. At 1000 requests/second, your database is struggling.
+
+**Question:** What happens when you add Redis as a cache layer?
+
+---
+
+### The Experiment
+
+We built a Java application to measure the actual performance difference between:
+
+1. Querying PostgreSQL directly (no cache)
+2. Using Redis as a cache layer
+
+**Setup:**
+
+- PostgreSQL with 1000 test users
+- Redis running
+
+---
