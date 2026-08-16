@@ -180,3 +180,51 @@ The **domain owner** sets TTL on their authoritative DNS server — not Cloudfla
 | When to use short TTL? | 1–2 days before a planned server migration so DNS propagates the new IP quickly |
 
 ---
+
+## CDN (Content Delivery Network)
+
+### What problem does it solve?
+
+Serving static content from a single origin server to users worldwide creates high latency and overwhelms the origin. A CDN caches static content on edge servers distributed globally, serving users from a location physically close to them.
+
+### The concept
+
+A CDN is a network of **edge servers (Points of Presence / PoPs)** spread around the world. Static content is cached at these edge servers so users get fast local delivery instead of traveling to the origin.
+
+**Analogy:** Publisher in New York = your origin server. Local bookstores worldwide = CDN edge servers. Same content, local delivery.
+
+### What belongs on a CDN
+
+| CDN (static) | Origin server (dynamic) |
+| --- | --- |
+| Images, videos, fonts | User profiles |
+| CSS, JavaScript files | Real-time prices |
+| HTML templates | Personalized feeds |
+
+### Pull vs Push
+
+|  | Pull | Push |
+| --- | --- | --- |
+| **How it works** | Edge fetches from origin on first request | You proactively upload to all edge servers |
+| **First request** | Slow — cache miss | Fast — already cached |
+| **Storage** | Only caches what's requested | Stores everything, even unused content |
+| **Best for** | Frequently requested content | Large files guaranteed to be needed (e.g. Netflix top 10) |
+
+**In practice:** Hybrid — push popular/guaranteed content, pull long-tail content on demand.
+
+### TTL and Cache Invalidation
+
+- CDN content has a **TTL** — after expiry, edge server fetches fresh copy from origin
+- **Cache invalidation** — forcing CDN to forget a file before TTL expires
+    - **Purge** — manually delete file from all edge servers immediately
+    - **Version filenames** — `style.v2.css` instead of `style.css` — new name = automatic cache miss = fresh fetch
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | High latency and origin server overload when serving static content to global users |
+| What breaks without it? | Users far from origin get slow load times; origin server gets overwhelmed serving the same static files repeatedly |
+| When NOT to use it? | Mostly dynamic content with no static assets to cache; small scale with local users where CDN cost isn't justified |
+
+---
