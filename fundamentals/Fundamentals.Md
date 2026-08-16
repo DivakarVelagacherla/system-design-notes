@@ -39,5 +39,51 @@ Vertical scaling is making your one kitchen bigger. Horizontal scaling is openin
 
 ---
 
-> *More sections will be added after each completed session.*
->
+## Load Balancing
+
+### What problem does it solve?
+
+When you have multiple servers, something needs to decide which server handles each incoming request — and stop sending traffic to servers that are down.
+
+### The concept
+
+A **load balancer** sits in front of your servers and:
+
+- Routes incoming requests to healthy servers
+- Performs **health checks** — constantly monitoring which servers are alive
+- Stops sending traffic to servers that fail health checks
+
+**Real-world analogy:** A host at a busy restaurant — customers don't pick their own table. The host knows which tables are free, which waiters are available, and directs each customer accordingly.
+
+### Routing Strategies
+
+| Strategy | How it works | Problem |
+| --- | --- | --- |
+| **Round Robin** | Rotates through servers in order | Ignores actual load — heavy requests can pile up on one server |
+| **Least Connections** | Routes to server with fewest active connections | Smarter, handles uneven request weights better |
+
+### Load Balancer Redundancy
+
+The load balancer itself is a single point of failure — so you need multiple load balancers:
+
+- **Active-Passive** — one floating IP, primary handles traffic, backup on standby. Heartbeat signal between them — if primary goes silent, backup takes over the floating IP.
+- **Active-Active** — DNS round robin across both load balancers. Both handle traffic simultaneously. If one fails, the other absorbs all traffic.
+
+### Layer 4 vs Layer 7
+
+|  | Layer 4 (NLB) | Layer 7 (ALB) |
+| --- | --- | --- |
+| **Operates on** | IP addresses + ports | HTTP — URLs, headers, cookies |
+| **Routing intelligence** | None — just forwards packets | Content-based routing (e.g. `/api/videos` → powerful servers) |
+| **Speed** | Faster, lower overhead | Slightly more overhead |
+| **Use when** | Ultra-low latency needed (gaming, trading) | Most modern web applications |
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Routes traffic across multiple servers, removes dead servers from rotation, eliminates single point of failure |
+| What breaks without it? | DNS round robin has no health checks — dead servers keep getting traffic, requests fail |
+| When NOT to use Layer 7? | When raw speed matters more than smart routing — use Layer 4 (NLB) instead |
+
+---
