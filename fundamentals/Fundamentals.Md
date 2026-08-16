@@ -1,3 +1,5 @@
+---
+
 ## Vertical vs Horizontal Scaling
 
 ### What problem does it solve?
@@ -85,5 +87,96 @@ The load balancer itself is a single point of failure — so you need multiple l
 | What problem does it solve? | Routes traffic across multiple servers, removes dead servers from rotation, eliminates single point of failure |
 | What breaks without it? | DNS round robin has no health checks — dead servers keep getting traffic, requests fail |
 | When NOT to use Layer 7? | When raw speed matters more than smart routing — use Layer 4 (NLB) instead |
+
+---
+
+## Stateless vs Stateful Servers
+
+### What problem does it solve?
+
+When multiple servers handle requests, user state (login, cart, preferences) can get trapped on one server — breaking horizontal scaling and redundancy.
+
+### The concept
+
+- **Stateful server** — holds user state locally in memory or on disk. Requests must return to the same server or the user loses their session.
+- **Stateless server** — holds nothing locally. All state lives in an external shared store (e.g. Redis). Any server can handle any request.
+
+### Why stateless is required for horizontal scaling
+
+- With stateful servers, you can't freely add or remove servers — users are stuck to specific ones
+- If a stateful server goes down, all users on it lose their sessions
+- With stateless servers, any server can be spun up or shut down at any time — users never notice
+
+### Naive solutions and why they fail
+
+| Approach | Problem |
+| --- | --- |
+| **Sticky sessions** | Load balancer always routes user to same server. Breaks when that server goes down. Creates uneven load. |
+| **Servers sharing state directly** | Complex, inefficient, doesn't scale |
+
+### The real solution
+
+Store session data in a **shared external store** — Redis is the standard choice.
+
+- Any server reads/writes session data from Redis
+- Servers become identical and interchangeable
+- Scale up or down freely without affecting users
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | User state trapped on one server breaks horizontal scaling and redundancy |
+| What breaks without it? | Servers go down and users lose sessions; can't freely scale horizontally |
+| When NOT to use external session store? | Small scale where sticky sessions is acceptable; truly stateless APIs with no user sessions at all |
+
+---
+
+## DNS (Domain Name System)
+
+### What problem does it solve?
+
+Humans remember names, not IP addresses. DNS translates human-readable domain names (www.google.com) into IP addresses that computers use to route requests.
+
+### The lookup chain
+
+When you type `www.google.com`:
+
+1. **DNS Resolver** (run by your ISP or a service like Cloudflare 1.1.1.1 / Google 8.8.8.8) checks its cache
+    - Cache hit → returns IP immediately
+    - Cache miss → starts the full lookup
+2. Resolver asks **Root DNS servers** → returns address of the `.com` TLD server
+3. Resolver asks **`.com` TLD server** → returns address of Google's authoritative server
+4. Resolver asks **Google's Authoritative DNS server** → returns the actual IP address
+5. Resolver **caches the result** with the TTL specified by Google
+6. Resolver returns the IP to your browser
+7. Browser connects to that IP
+
+### TTL — Time To Live
+
+Every DNS record has a TTL — how long resolvers should cache it before fetching a fresh copy.
+
+| TTL | Tradeoff |
+| --- | --- |
+| **Long TTL** (24hrs+) | Faster lookups, less DNS traffic. Stale records persist longer after IP changes. |
+| **Short TTL** (5 mins) | Records update quickly after changes. More DNS lookups, more load on servers. |
+
+**Rule of thumb:**
+
+- Normal operations → long TTL (1–24 hours)
+- 1–2 days before a planned migration → shorten to 5 minutes so the world picks up the new IP quickly
+- After migration is stable → set TTL back to long
+
+### Who sets the TTL?
+
+The **domain owner** sets TTL on their authoritative DNS server — not Cloudflare or the resolver. Resolvers just read and obey whatever TTL the authoritative server specifies.
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Translates human-readable domain names to IP addresses so humans don't need to remember IPs |
+| What breaks without caching/TTL? | Authoritative servers get overwhelmed with every lookup; stale cached records can't be corrected after IP changes |
+| When to use short TTL? | 1–2 days before a planned server migration so DNS propagates the new IP quickly |
 
 ---
