@@ -272,3 +272,64 @@ RAM is expensive and limited. You can't store everything in cache. Only store ho
 | When NOT to use it? | Queries are random with no repetition (low hit rate, cache adds cost with no benefit); data changes so frequently that cached values are always stale |
 
 ---
+
+## Cache Strategies
+
+### What problem does it solve?
+
+Different systems have different needs — some prioritize read speed, some write speed, some consistency, some durability. Cache strategies define how your app reads from and writes to the cache and database to balance these tradeoffs.
+
+### The Four Strategies
+
+#### 1. Cache-Aside (Lazy Loading)
+
+Application code manages the cache manually.
+
+- **Read:** Check cache → hit: return data. Miss: fetch from DB → store in cache → return data
+- **Write:** Write to DB → invalidate cache entry (delete stale data, let next read repopulate)
+- **Best for:** Read-heavy workloads, general purpose
+- **Tradeoff:** Cache is empty on cold start; developer must remember to manage cache correctly
+
+#### 2. Write-Through
+
+Every write goes to cache AND database simultaneously.
+
+- **Read:** Same as cache-aside
+- **Write:** Write to cache AND database at the same time
+- **Best for:** Systems where read speed matters and data must always be fresh
+- **Tradeoff:** Wasted writes — data cached that may never be read again; slower writes
+
+#### 3. Write-Behind (Write-Back)
+
+Write to cache first, return success to user immediately. Database updated asynchronously in background.
+
+- **Write:** Write to cache → return success → background process flushes to DB
+- **Best for:** Write-heavy systems where data loss is acceptable (like counts, view counts, analytics)
+- **Tradeoff:** If cache crashes before flush, data is permanently lost. Cache and DB temporarily inconsistent.
+
+#### 4. Read-Through
+
+Cache sits in front of database and manages itself. App only talks to cache.
+
+- **Read:** App requests from cache → hit: return data. Miss: cache fetches from DB, stores it, returns it
+- **Best for:** Simplifying application code, teams where cache management shouldn't be the app's concern
+- **Tradeoff:** Less flexible than cache-aside; cache controls what gets stored
+
+### Quick Comparison
+
+| Strategy | Who manages cache? | Write speed | Risk |
+| --- | --- | --- | --- |
+| Cache-aside | Application | Normal | Stale data on writes |
+| Write-through | Application | Slower (double write) | Wasted cache memory |
+| Write-behind | Cache (async) | Fastest | Data loss on crash |
+| Read-through | Cache (auto) | Normal | Less control |
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Defines how to balance speed, consistency, and durability between cache and database for different workloads |
+| What breaks with wrong strategy? | Data loss (write-behind in critical systems), wasted memory (write-through everywhere), stale data (no invalidation on writes) |
+| When to use write-behind? | When data loss is acceptable and write speed is critical — like counts, view counts, analytics, shopping cart |
+
+---
