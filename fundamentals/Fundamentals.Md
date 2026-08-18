@@ -228,3 +228,47 @@ A CDN is a network of **edge servers (Points of Presence / PoPs)** spread around
 | When NOT to use it? | Mostly dynamic content with no static assets to cache; small scale with local users where CDN cost isn't justified |
 
 ---
+
+## Caching Fundamentals
+
+### What problem does it solve?
+
+Repeated identical database queries are slow and expensive. A cache stores frequently accessed data in fast memory so the database isn't hit every time.
+
+### The concept
+
+A **cache** is a fast, temporary storage layer that sits between your application and your database, holding frequently accessed data in RAM.
+
+**Why it's faster than a database:**
+
+- Traditional database → stores data on **disk** → slow, milliseconds
+- Cache (Redis) → stores data in **RAM** → fast, microseconds → ~100x faster
+
+The cache is not a replacement for the database — it's a fast layer in front of it. Full dataset lives on disk; hot data lives in RAM.
+
+### Cache Hit vs Cache Miss
+
+|  | What it means | What happens |
+| --- | --- | --- |
+| **Cache hit** | Data IS in the cache | Returned immediately, no database call |
+| **Cache miss** | Data is NOT in the cache | Fetch from database, store in cache, return to user |
+
+### Why not cache everything locally per server?
+
+Local in-memory cache on each server = stateful servers. Each server has its own copy, they go out of sync. Same problem as stateful servers from Session 3.
+
+**Solution:** Centralized shared cache (Redis) — same pattern as shared session storage. All servers read from and write to one place.
+
+### The tradeoff
+
+RAM is expensive and limited. You can't store everything in cache. Only store hot, frequently accessed data. Everything else stays in the database.
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Reduces repeated expensive database calls for the same data — speeds up response times and reduces database load |
+| What breaks without it? | Database gets overwhelmed with repeated identical queries, becomes the bottleneck under heavy traffic |
+| When NOT to use it? | Queries are random with no repetition (low hit rate, cache adds cost with no benefit); data changes so frequently that cached values are always stale |
+
+---
