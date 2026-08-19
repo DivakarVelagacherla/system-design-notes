@@ -333,3 +333,53 @@ Cache sits in front of database and manages itself. App only talks to cache.
 | When to use write-behind? | When data loss is acceptable and write speed is critical — like counts, view counts, analytics, shopping cart |
 
 ---
+
+## Cache Eviction Policies
+
+### What problem does it solve?
+
+RAM is limited and expensive. When the cache is full and a new item needs to be stored, something has to be removed. Eviction policies decide which item gets evicted to make room.
+
+### The Three Policies
+
+#### LRU — Least Recently Used
+
+Evict the item that hasn't been accessed for the longest time.
+
+- **Assumption:** Recent access = likely to be accessed again soon
+- **Best for:** Most web applications — recent usage is the best predictor of future usage
+- **Tradeoff:** Every read must update the access timestamp — overhead at high throughput. Redis uses a randomized approximation rather than true LRU for efficiency.
+
+#### LFU — Least Frequently Used
+
+Evict the item that has been accessed the fewest times overall.
+
+- **Assumption:** Consistently popular items should stay in cache regardless of recent access
+- **Best for:** Consistently popular data over long periods — homepages, top products, reference data
+- **Tradeoff:** Can get "stuck" on historically popular data that's no longer relevant (e.g. a viral news article from last week)
+
+#### FIFO — First In First Out
+
+Evict whatever has been in the cache the longest, regardless of access patterns.
+
+- **Simple to implement but blind to usage** — most popular item gets evicted just because it was cached first
+- **Rarely the right choice** for production systems
+
+### LRU vs LFU — When to pick which
+
+| Scenario | Better choice |
+| --- | --- |
+| General web app, social feeds, user sessions | LRU |
+| Consistently popular data (homepage, top 10 products) | LFU |
+| Burst traffic (viral content, breaking news) | LRU — LFU gets stuck on stale burst data |
+| Long-term stable popularity | LFU |
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Cache is full — decides which item to remove to make room for new data |
+| What breaks without it? | Cache runs out of memory, crashes or rejects new entries, hit rate drops, database gets overwhelmed |
+| When to use LFU over LRU? | When data has consistently high popularity over long periods, not just recent or burst traffic |
+
+---
