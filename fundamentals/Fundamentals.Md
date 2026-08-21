@@ -525,3 +525,81 @@ Always update the database first — it's the source of truth. Cache is secondar
 | When to accept TTL-based? | Low stakes, slowly changing data where brief staleness causes no real harm |
 
 ---
+
+## Terms Worth Knowing
+
+Use these naturally in sentences during interviews. Don't recite definitions — use them in context.
+
+### Reliability & Failure
+
+| Term | Plain English |
+| --- | --- |
+| **Fault tolerant** | System keeps working even when parts fail |
+| **Resilient** | System recovers quickly from failures |
+| **Redundancy** | Duplicate components so one failure doesn't stop everything |
+| **Failover** | Automatically switching to a backup when primary fails |
+| **Single point of failure** | One component whose failure brings down the whole system |
+| **Graceful degradation** | System works at reduced capacity rather than failing completely |
+| **Race condition** | Two operations happening simultaneously producing unpredictable results |
+| **Deadlock** | Two processes each waiting for the other, neither can proceed |
+
+### Performance
+
+| Term | Plain English |
+| --- | --- |
+| **Latency** | Time taken for one request to complete |
+| **Throughput** | Number of requests handled per second |
+| **Bottleneck** | The slowest part of the system that limits overall performance |
+| **Hot spot** | One server or resource getting disproportionately more traffic than others |
+| **Cache hit rate** | Percentage of requests served from cache vs database |
+
+### Data
+
+| Term | Plain English |
+| --- | --- |
+| **Consistency** | All users see the same data at the same time |
+| **Durability** | Data survives crashes and restarts |
+| **Availability** | System is up and responding to requests |
+| **Persistence** | Data survives beyond the process that created it |
+| **Idempotency** | Performing the same operation multiple times produces the same result |
+| **Atomicity** | Operation either completes fully or not at all, never halfway |
+| **Stale data** | Cached data that no longer matches the source of truth |
+| **Source of truth** | The authoritative, definitive copy of data |
+
+### Scaling
+
+| Term | Plain English |
+| --- | --- |
+| **Horizontal scaling** | Adding more machines |
+| **Vertical scaling** | Making one machine bigger |
+| **Stateless** | Server holds no user data between requests |
+| **Stateful** | Server remembers user data between requests |
+| **Sharding** | Splitting data across multiple databases |
+| **Replication** | Copying data across multiple databases |
+| **Partitioning** | Dividing data into smaller chunks |
+
+### System Design
+
+| Term | Plain English |
+| --- | --- |
+| **Tradeoff** | Gaining one thing at the cost of another |
+| **Overhead** | Extra cost (time, memory, compute) of doing something |
+| **Coupling** | How dependent two components are on each other |
+| **Decoupled** | Components that operate independently of each other |
+| **Asynchronous** | Operations that don't wait for each other to complete |
+| **Synchronous** | Operations that wait for each other to complete |
+| **Eventual consistency** | Data will be consistent across all nodes, but not immediately |
+| **Strong consistency** | Data is immediately consistent across all nodes |
+
+### Communication
+
+| Term | Plain English |
+| --- | --- |
+| **Payload** | The actual data being sent in a request |
+| **Polling** | Client repeatedly asking server for updates |
+| **Event driven** | Components react to events rather than being directly called |
+
+---
+
+> **How to use these:** Instead of "if the server breaks, the other server takes over" — say "we need failover so that if the primary goes down, the replica takes over automatically — otherwise we have a single point of failure." Same idea, completely different signal to the interviewer.
+>
