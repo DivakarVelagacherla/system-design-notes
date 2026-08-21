@@ -446,3 +446,82 @@ RAM is volatile — Redis crashes = data gone. Two mechanisms to persist to disk
 | When to choose Memcached? | Pure simple string caching only — but Redis covers this too, so rarely a compelling reason |
 
 ---
+
+## Cache Invalidation
+
+### What problem does it solve?
+
+When source data changes in the database, the cache can serve stale data to users. Cache invalidation ensures the cache stays consistent with the database when data changes.
+
+> *"There are only two hard things in computer science: cache invalidation and naming things."*
+> 
+
+### Why TTL alone isn't enough
+
+TTL is too blunt — you can't always predict when data will change. A 24-hour TTL on a product price means users see the wrong price for up to 24 hours after a change.
+
+### The two main strategies
+
+#### 1. TTL-Based Expiration
+
+Let the cache expire naturally. Stale data exists until TTL runs out, then fresh data is fetched from the database.
+
+- **Simple** — no extra infrastructure
+- **Risk** — stale window can be long
+- **Use when** — low stakes, slowly changing data (profile pictures, article descriptions, usernames)
+
+#### 2. Event-Driven Invalidation
+
+When data changes, immediately tell the cache.
+
+**Option A — Application level (most common):**
+
+When app writes to database → immediately delete or update cache entry.
+
+- Simpler, fewer moving parts
+- Application owns the write, so it owns the invalidation
+
+**Option B — Database trigger:**
+
+Database detects change → fires event → listener invalidates cache.
+
+- More reliable for complex systems
+- Adds a third component to manage
+
+**Production pattern — queue as fallback:**
+
+If Redis is down when invalidation is attempted → put invalidation event in a message queue → consumer processes when Redis recovers. Decoupled and failure-tolerant.
+
+### Delete vs Update on write
+
+|  | Delete cache entry | Update cache entry |
+| --- | --- | --- |
+| **Next read** | Cache miss → fetches fresh from DB | Cache hit → served immediately |
+| **Race condition risk** | None — delete is safe | Yes — concurrent writes can leave cache out of sync with DB |
+| **Correctness** | Always correct | Can get stale if writes overlap |
+
+**Bottom line:** Delete is safer than update. One extra DB read on next request is worth guaranteed correctness.
+
+### When to use which
+
+| Scenario | Strategy |
+| --- | --- |
+| Product prices, inventory | Event-driven + delete on write |
+| Authentication tokens | Event-driven + delete on write |
+| User profile pictures | TTL-based |
+| Article view counts | TTL-based |
+| Username, bio | TTL-based |
+
+### Database first, cache second
+
+Always update the database first — it's the source of truth. Cache is secondary. If Redis is down, stale cache is acceptable. Stale database is not.
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve? | Ensures cache stays consistent with database when source data changes |
+| What breaks without it? | Users see stale data — wrong prices, outdated inventory, old profile info. Cache lies to the user. |
+| When to accept TTL-based? | Low stakes, slowly changing data where brief staleness causes no real harm |
+
+---
