@@ -383,3 +383,66 @@ Evict whatever has been in the cache the longest, regardless of access patterns.
 | When to use LFU over LRU? | When data has consistently high popularity over long periods, not just recent or burst traffic |
 
 ---
+
+## Redis Deep Dive
+
+### What problem does it solve?
+
+Redis goes beyond simple caching — it provides rich data structures, persistence, and replication, moving complexity out of application code and into the data layer.
+
+### Redis Data Types (what matters for system design)
+
+| Data Type | What it stores | Use case |
+| --- | --- | --- |
+| **String** | Any single value — text, number, serialized JSON | Simple caching, counters |
+| **Hash** | Multiple field-value pairs under one key | User profiles — update individual fields without rewriting the whole object |
+| **List** | Ordered sequence, push/pop from either end | Activity feeds, queues |
+| **Sorted Set** | Unique members each with a score, auto-sorted | Leaderboards, priority queues, rate limiting |
+| **Set** | Unique unordered values | Unique visitor counts, tags |
+
+**String vs Hash — key difference:**
+
+- String = sealed envelope. Fetch whole thing, update in app code, write back. 4 steps.
+- Hash = folder with separate documents. Update one field with one command. 1 step.
+
+### TTL in Redis
+
+Same concept as DNS/CDN — keys automatically expire and get deleted after a set time. TTL alone doesn't solve staleness when data changes unpredictably → see Cache Invalidation (Session 10).
+
+### Redis Persistence
+
+RAM is volatile — Redis crashes = data gone. Two mechanisms to persist to disk:
+
+|  | RDB (Snapshot) | AOF (Append Only File) |
+| --- | --- | --- |
+| **How** | Periodic full snapshot to disk | Every write logged to disk immediately |
+| **Data loss risk** | Everything since last snapshot | Milliseconds at most |
+| **Speed** | Faster | Slower (every write hits disk) |
+| **Best for** | Cache data — loss acceptable | Session data — loss unacceptable |
+
+**Production:** Often use both — AOF for durability, RDB for fast restores.
+
+### Redis vs Memcached
+
+|  | Redis | Memcached |
+| --- | --- | --- |
+| **Data types** | String, Hash, List, Set, Sorted Set | String only |
+| **Persistence** | RDB + AOF | None |
+| **Replication** | Yes | No |
+| **Use when** | Almost always | Pure simple caching, legacy systems |
+
+**Bottom line:** Redis covers everything Memcached does, plus more. Default to Redis. Memcached is largely legacy.
+
+### AWS equivalent
+
+**ElastiCache** — managed Redis or Memcached. AWS handles scaling, patching, and failover.
+
+### Three-Question Ritual
+
+| Question | Answer |
+| --- | --- |
+| What problem does it solve beyond caching? | Rich data structures move complexity out of app code — Hashes for objects, Sorted Sets for leaderboards, Lists for queues |
+| What breaks if Redis crashes with no persistence? | All data lost — cache misses flood the database, sessions lost, leaderboards gone |
+| When to choose Memcached? | Pure simple string caching only — but Redis covers this too, so rarely a compelling reason |
+
+---
