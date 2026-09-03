@@ -25,13 +25,8 @@ Notes from working through system design fundamentals, databases, and (eventuall
 - [x] [Database Partitioning](./databases_part1/database_partitioning.md)
 - [x] [Database Replication](./databases_part1/database_replication.md)
 - [x] [Database Sharding](./databases_part1/database_sharding.md)
-- [ ] Transactions & ACID vs BASE
-- [ ] CAP theorem & consistency models
-
-### Up Next
-
-- [ ] Messaging & event streaming (Kafka, queues, outbox pattern)
-- [ ] Resilience patterns (rate limiting, circuit breakers, backpressure)
-- [ ] Observability (metrics, logs, traces, SLO/SLI)
-- [ ] Low-level design (SOLID, GoF patterns, domain modeling)
-- [ ] End-to-end system designs (URL shortener, rate limiter, feature flags, doc collaboration)
+- [x] [Consistent Hashing](./databases_part2/consistent_hashing.md)
+- [x] [CAP Theorem](./databases_part2/cap_theorem.md)
+- [x] [ACID vs BASE](./databases_part2/acid_base.md)
+- [x] [Strong vs Eventual Consistency](./databases_part2/strong_vs_eventual_consistency.md)
+- [x] [Distributed Transactions](./databases_part2/distributed_transactions.md)
