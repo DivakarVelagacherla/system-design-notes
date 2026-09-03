@@ -9,9 +9,9 @@
 
 ## First — Clear Up the Terminology
 
-**Database Partitioning (Session 14):** Splitting a large table into smaller chunks for performance. Nothing to do with CAP.
+**Database Partitioning:** Splitting a large table into smaller chunks for performance. Nothing to do with CAP.
 
-**Database Sharding (Session 15):** Splitting data across multiple servers for scale. Nothing to do with CAP.
+**Database Sharding:** Splitting data across multiple servers for scale. Nothing to do with CAP.
 
 **Network Partition:** When the network connection between two servers breaks. The servers are fine, the data is fine — but they can’t communicate with each other. Like two offices with broken phone lines — both still open, but can’t share information.
 
