@@ -30,3 +30,10 @@ Notes from working through system design fundamentals, databases, and (eventuall
 - [x] [ACID vs BASE](./databases_part2/acid_base.md)
 - [x] [Strong vs Eventual Consistency](./databases_part2/strong_vs_eventual_consistency.md)
 - [x] [Distributed Transactions](./databases_part2/distributed_transactions.md)
+
+### Communications
+
+- [x] [REST vs GraphQL vs gRPC](./communications/rest_graphql_grpc.md)
+- [x] [Websockets](./communications/websockets.md)
+- [x] [Messaging Queues](./communications/messaging_queues.md)
+- [x] [Kafka](./communications/kafka.md)
