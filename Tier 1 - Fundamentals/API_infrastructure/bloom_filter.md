@@ -1,3 +1,5 @@
+# Bloom Filter
+
 ## The One-Line Summary
 
 > A Bloom Filter is a memory-efficient probabilistic data structure that answers "has this item been seen before?" It eliminates expensive database lookups for the "definitely not exists" case.
