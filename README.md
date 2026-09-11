@@ -4,36 +4,44 @@ Notes from working through system design fundamentals, databases, and (eventuall
 
 ## Roadmap
 
-### Fundamentals
+### Tier 1 - Fundamentals
 
-- [x] [Vertical vs Horizontal Scaling](./fundamentals/Fundamentals.Md#vertical-vs-horizontal-scaling)
-- [x] [Load Balancing](./fundamentals/Fundamentals.Md#load-balancing)
-- [x] [Stateless vs Stateful Servers](./fundamentals/Fundamentals.Md#stateless-vs-stateful-servers)
-- [x] [DNS](./fundamentals/Fundamentals.Md#dns-domain-name-system)
-- [x] [CDN](./fundamentals/Fundamentals.Md#cdn-content-delivery-network)
-- [x] [Caching Fundamentals](./fundamentals/Fundamentals.Md#caching-fundamentals)
-- [x] [Cache Strategies](./fundamentals/Fundamentals.Md#cache-strategies)
-- [x] [Cache Eviction Policies](./fundamentals/Fundamentals.Md#cache-eviction-policies)
-- [x] [Redis Deep Dive](./fundamentals/Fundamentals.Md#redis-deep-dive)
-- [x] [Cache Invalidation](./fundamentals/Fundamentals.Md#cache-invalidation)
-- [x] [Terms Worth Knowing](./fundamentals/Fundamentals.Md#terms-worth-knowing)
+- [x] [Vertical vs Horizontal Scaling](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#vertical-vs-horizontal-scaling>)
+- [x] [Load Balancing](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#load-balancing>)
+- [x] [Stateless vs Stateful Servers](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#stateless-vs-stateful-servers>)
+- [x] [DNS](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#dns-domain-name-system>)
+- [x] [CDN](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#cdn-content-delivery-network>)
+- [x] [Caching Fundamentals](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#caching-fundamentals>)
+- [x] [Cache Strategies](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#cache-strategies>)
+- [x] [Cache Eviction Policies](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#cache-eviction-policies>)
+- [x] [Redis Deep Dive](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#redis-deep-dive>)
+- [x] [Cache Invalidation](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#cache-invalidation>)
+- [x] [Terms Worth Knowing](<./Tier 1 - Fundamentals/fundamentals/Fundamentals.Md#terms-worth-knowing>)
 
 ### Databases
 
-- [x] [SQL vs NoSQL](<./databases_part1/SQL vs NoSQL.md>)
-- [x] [Database Indexing](./databases_part1/database_indexing.md)
-- [x] [Database Partitioning](./databases_part1/database_partitioning.md)
-- [x] [Database Replication](./databases_part1/database_replication.md)
-- [x] [Database Sharding](./databases_part1/database_sharding.md)
-- [x] [Consistent Hashing](./databases_part2/consistent_hashing.md)
-- [x] [CAP Theorem](./databases_part2/cap_theorem.md)
-- [x] [ACID vs BASE](./databases_part2/acid_base.md)
-- [x] [Strong vs Eventual Consistency](./databases_part2/strong_vs_eventual_consistency.md)
-- [x] [Distributed Transactions](./databases_part2/distributed_transactions.md)
+- [x] [SQL vs NoSQL](<./Tier 1 - Fundamentals/databases_part1/SQL vs NoSQL.md>)
+- [x] [Database Indexing](<./Tier 1 - Fundamentals/databases_part1/database_indexing.md>)
+- [x] [Database Partitioning](<./Tier 1 - Fundamentals/databases_part1/database_partitioning.md>)
+- [x] [Database Replication](<./Tier 1 - Fundamentals/databases_part1/database_replication.md>)
+- [x] [Database Sharding](<./Tier 1 - Fundamentals/databases_part1/database_sharding.md>)
+- [x] [Consistent Hashing](<./Tier 1 - Fundamentals/databases_part2/consistent_hashing.md>)
+- [x] [CAP Theorem](<./Tier 1 - Fundamentals/databases_part2/cap_theorem.md>)
+- [x] [ACID vs BASE](<./Tier 1 - Fundamentals/databases_part2/acid_base.md>)
+- [x] [Strong vs Eventual Consistency](<./Tier 1 - Fundamentals/databases_part2/strong_vs_eventual_consistency.md>)
+- [x] [Distributed Transactions](<./Tier 1 - Fundamentals/databases_part2/distributed_transactions.md>)
 
 ### Communications
 
-- [x] [REST vs GraphQL vs gRPC](./communications/rest_graphql_grpc.md)
-- [x] [Websockets](./communications/websockets.md)
-- [x] [Messaging Queues](./communications/messaging_queues.md)
-- [x] [Kafka](./communications/kafka.md)
+- [x] [REST vs GraphQL vs gRPC](<./Tier 1 - Fundamentals/communications/rest_graphql_grpc.md>)
+- [x] [Websockets](<./Tier 1 - Fundamentals/communications/websockets.md>)
+- [x] [Messaging Queues](<./Tier 1 - Fundamentals/communications/messaging_queues.md>)
+- [x] [Kafka](<./Tier 1 - Fundamentals/communications/kafka.md>)
+
+### API Infrastructure
+
+- [x] [API Gateway](<./Tier 1 - Fundamentals/API_infrastructure/API_Gateway.md>)
+- [x] [Rate Limiting](<./Tier 1 - Fundamentals/API_infrastructure/rate_limiting.md>)
+- [x] [Authentication](<./Tier 1 - Fundamentals/API_infrastructure/authentication.md>)
+- [x] [Bloom Filter](<./Tier 1 - Fundamentals/API_infrastructure/bloom_filter.md>)
+- [x] [Monolith vs Microservices](<./Tier 1 - Fundamentals/API_infrastructure/monolith_vs_microservice.md>)
