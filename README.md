@@ -45,3 +45,11 @@ Notes from working through system design fundamentals, databases, and (eventuall
 - [x] [Authentication](<./Tier 1 - Fundamentals/API_infrastructure/authentication.md>)
 - [x] [Bloom Filter](<./Tier 1 - Fundamentals/API_infrastructure/bloom_filter.md>)
 - [x] [Monolith vs Microservices](<./Tier 1 - Fundamentals/API_infrastructure/monolith_vs_microservice.md>)
+
+### Tier 2 - Architectural Patterns
+
+- [x] [Event-Driven Architecture](<./Tier 2/architectural_patterns/event_driven_architecture.md>)
+- [x] [CQRS](<./Tier 2/architectural_patterns/CQRS.md>)
+- [x] [Event Sourcing](<./Tier 2/architectural_patterns/event_sourcing.md>)
+- [x] [Saga Pattern](<./Tier 2/architectural_patterns/saga_pattern.md>)
+- [x] [Circuit Breaker](<./Tier 2/architectural_patterns/circuit_breaker.md>)
