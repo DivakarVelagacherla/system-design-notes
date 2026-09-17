@@ -53,3 +53,11 @@ Notes from working through system design fundamentals, databases, and (eventuall
 - [x] [Event Sourcing](<./Tier 2/architectural_patterns/event_sourcing.md>)
 - [x] [Saga Pattern](<./Tier 2/architectural_patterns/saga_pattern.md>)
 - [x] [Circuit Breaker](<./Tier 2/architectural_patterns/circuit_breaker.md>)
+
+### Tier 2 - Reliability & Observability
+
+- [x] [High Availability](<./Tier 2/reliability_observability/high_availability.md>)
+- [x] [Fault Tolerance](<./Tier 2/reliability_observability/fault_tolerance.md>)
+- [x] [Distributed Locking](<./Tier 2/reliability_observability/distributed_locking.md>)
+- [x] [Monitoring and Alerting](<./Tier 2/reliability_observability/monitoring_alerting.md>)
+- [x] [Service Discovery](<./Tier 2/reliability_observability/service_discovery.md>)
